@@ -1,5 +1,11 @@
+// Variables globales para tomar el canvas
+// Y poder dibujar objetos 2d en el
 var canvas = document.getElementById("elcanvas");
 var ctx = canvas.getContext("2d");
+
+
+// Los 3 siguientes bloques de codigo sirven para crear
+// objectos 2d de distinta forma, color, tamaño...
 
 ctx.beginPath();
 ctx.rect(20, 40, 50, 50);
