@@ -75,11 +75,22 @@ function draw() {
     if(x + dx > canvas.width-radioBola || x + dx < radioBola) {
         dx = -dx;
     }
-
-    // Similiar al if de arriba, pero corrrigiendo que no desaparezca tanto por arriba como por abajo
+    // Similiar al if de arriba, pero corrrigiendo que no desaparezca SOLO por arriba
     // Tambien necesario usar radioBola porque sino rebotaria cuando esté media bola fuera
-    if(y + dy > canvas.height-radioBola || y + dy < radioBola) {
+    if(y + dy < radioBola) {
         dy = -dy;
+    }
+    // Este es el caso en el que la bola llege a la parte inferior donde está la pala
+    else if(y + dy > canvas.height-radioBola) {
+        // Si golpea la pala, rebota
+        if(x > paddleX && x < paddleX + paddleWidth) {
+            dy = -dy;
+        }
+        // En caso contrario finaliza el juego, muestra un mensaje y reinicia el juego
+        else {
+            alert("Fin del juego");
+            document.location.reload();
+        }
     }
 
     // Este if comprueba que si la tecla izquieda o la derecha esta
