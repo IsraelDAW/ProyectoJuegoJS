@@ -10,6 +10,37 @@ var dx = 4;
 var dy = -4;
 // Variable radioBola para indicar el radio (el tamaño) de la bola
 var radioBola = 10;
+// Las siguientes variables definen el tamaño de la pala que controla el usuario
+var paddleHeight = 15;
+var paddleWidth = 100;
+var paddleX = (canvas.width-paddleWidth)/2;
+// Variables para comprobar si el usuario está pulsando los botones que controla la pala
+var rightPressed = false;
+var leftPressed = false;
+
+// Event Listeners para que el navegador pueda interpretar la pulsación de teclas
+// Estos llaman a las funciones keyDownHandler() y keyUpHandler() 
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+// Función que comprueba si se está pulsando las teclas izquierda (37) y derecha (39)
+function keyDownHandler(e) {
+    if(e.keyCode == 39) {
+        rightPressed = true;
+    }
+    else if(e.keyCode == 37) {
+        leftPressed = true;
+    }
+}
+// Función que comprueba si se ha dejado de pulsar las teclas izquierda (37) y derecha (39)
+function keyUpHandler(e) {
+    if(e.keyCode == 39) {
+        rightPressed = false;
+    }
+    else if(e.keyCode == 37) {
+        leftPressed = false;
+    }
+}
 
 // Esta funcion dibuja la bola
 function drawBall() {
@@ -20,11 +51,23 @@ function drawBall() {
     ctx.closePath();
 }
 
-// Esta funcion se encarga que la bola no deje
-// un rastro (una linea) a su paso con clearRect()
+// Esta función dibuja la pala que controla el usuario
+function drawPaddle() {
+    ctx.beginPath();
+    ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+}
+
+// Esta funcion se encarga de lo siguiente 
 function draw() {
+    // que la bola no deje un rastro (una linea) a su paso con clearRect()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // crea la bola definida anteriormente
     drawBall();
+    // crea la pala definida anteriormente
+    drawPaddle();
 
     // Con este if se corrige que la bola no desaparezca por la derecha e izquierda
     // Hace falta usar la variable radioBola porque sino la bola no chocaria,
@@ -37,6 +80,17 @@ function draw() {
     // Tambien necesario usar radioBola porque sino rebotaria cuando esté media bola fuera
     if(y + dy > canvas.height-radioBola || y + dy < radioBola) {
         dy = -dy;
+    }
+
+    // Este if comprueba que si la tecla izquieda o la derecha esta
+    // pulsada se mueva horizontalmente por la pantalla
+    // También se verifica el valor de paddleX para que no se salga de la pantalla (del canvas)
+    // Modificando aquí el valor de paddleX cambiará la velocidad de desplazamiento de la pala
+    if(rightPressed && paddleX < canvas.width-paddleWidth) {
+        paddleX += 15;
+    }
+    else if(leftPressed && paddleX > 0) {
+        paddleX -= 15;
     }
 
     //se modifican los valores de x e y para
