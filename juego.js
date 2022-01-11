@@ -17,6 +17,22 @@ var paddleX = (canvas.width-paddleWidth)/2;
 // Variables para comprobar si el usuario está pulsando los botones que controla la pala
 var rightPressed = false;
 var leftPressed = false;
+// Variables para controlar los ladrillos, numero de filas, columnas, cantidad, tamaño...
+var brickRowCount = 4;
+var brickColumnCount = 5;
+var brickWidth = 75;
+var brickHeight = 20;
+var brickPadding = 10;
+var brickOffsetTop = 30;
+var brickOffsetLeft = 30;
+// Se declara un array que será bidimensional que contendrá el numero de ladrillos según el numero de filas y columnas
+var ladrillos = [];
+for(c=0; c<brickColumnCount; c++) {
+    ladrillos[c] = [];
+    for(r=0; r<brickRowCount; r++) {
+        ladrillos[c][r] = { x: 0, y: 0 };
+    }
+}
 
 // Event Listeners para que el navegador pueda interpretar la pulsación de teclas
 // Estos llaman a las funciones keyDownHandler() y keyUpHandler() 
@@ -46,7 +62,7 @@ function keyUpHandler(e) {
 function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, radioBola, 0, Math.PI*2);
-    ctx.fillStyle = "#0095DD";
+    ctx.fillStyle = "#ff0000";
     ctx.fill();
     ctx.closePath();
 }
@@ -55,15 +71,35 @@ function drawBall() {
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-    ctx.fillStyle = "#0095DD";
+    ctx.fillStyle = "#ff0000";
     ctx.fill();
     ctx.closePath();
 }
+
+// Esta función dibuja los ladrillos que el usuario golpeará con la bola
+function drawBricks() {
+    for(c=0; c<brickColumnCount; c++) {
+        for(r=0; r<brickRowCount; r++) {
+            var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+            var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+            ladrillos[c][r].x = brickX;
+            ladrillos[c][r].y = brickY;
+            ctx.beginPath();
+            ctx.rect(brickX, brickY, brickWidth, brickHeight);
+            ctx.fillStyle = "#ff0000";
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
+}
+
 
 // Esta funcion se encarga de lo siguiente 
 function draw() {
     // que la bola no deje un rastro (una linea) a su paso con clearRect()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // crea los ladrillos definidos anteriormente
+    drawBricks();
     // crea la bola definida anteriormente
     drawBall();
     // crea la pala definida anteriormente
