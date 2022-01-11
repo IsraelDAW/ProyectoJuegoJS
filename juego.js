@@ -11,81 +11,82 @@ var dy = -4;
 // Variable radioBola para indicar el radio (el tamaño) de la bola
 var radioBola = 10;
 // Las siguientes variables definen el tamaño de la pala que controla el usuario
-var paddleHeight = 15;
-var paddleWidth = 100;
-var paddleX = (canvas.width-paddleWidth)/2;
+var alturaPala = 15;
+var anchoPala = 100;
+var posicionPalaX = (canvas.width-anchoPala)/2;
 // Variables para comprobar si el usuario está pulsando los botones que controla la pala
-var rightPressed = false;
-var leftPressed = false;
+var pulsarDerecha = false;
+var pulsarIzquierda = false;
 // Variables para controlar los ladrillos, numero de filas, columnas, cantidad, tamaño...
-var brickRowCount = 4;
-var brickColumnCount = 5;
-var brickWidth = 75;
-var brickHeight = 20;
-var brickPadding = 10;
-var brickOffsetTop = 30;
-var brickOffsetLeft = 30;
-// Variable que cuenta tu puntuación
-var score = 0;
+var filasLadrillo = 4;
+var columnasLadrillo = 5;
+var alturaLadrillo = 75;
+var anchoLadrillo = 20;
+var espaciadoEntreLadrillos = 10;
+var margenSuperiorLadrillos = 30;
+var margenIzquierdoLadrillos = 30;
+// Variable que cuenta la puntuación
+var puntos = 0;
 // Variable que contiene las vidas restantes del jugador
-var lives = 3;
+var vidas = 3;
 // Se declara un array que será bidimensional que contendrá el numero de ladrillos según el numero de filas y columnas
-// Al ladrillo como objeto se le añade un status para ver si han sido colisionados
+// Al ladrillo como objeto se le añade un golpeado para ver si han sido colisionados
 var ladrillos = [];
-for(c=0; c<brickColumnCount; c++) {
+for(c=0; c<columnasLadrillo; c++) {
     ladrillos[c] = [];
-    for(r=0; r<brickRowCount; r++) {
-        ladrillos[c][r] = { x: 0, y: 0, status: 1 };
+    for(r=0; r<filasLadrillo; r++) {
+        ladrillos[c][r] = { x: 0, y: 0, golpeado: 1 };
     }
 }
 
 // Event Listeners para que el navegador pueda interpretar la pulsación de teclas
-// Estos llaman a las funciones keyDownHandler() y keyUpHandler() 
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
-// Similar a lo anterior pero con el ratón
-document.addEventListener("mousemove", mouseMoveHandler, false);
+// Estos llaman a las funciones pulsarTecla() y dejarPulsarTecla() 
+document.addEventListener("keydown", pulsarTecla, false);
+document.addEventListener("keyup", dejarPulsarTecla, false);
+// Similar a lo anterior pero con el ratón y la funcion controladorRaton()
+document.addEventListener("mousemove", controladorRaton, false);
 
-// Funcion que en función del moviento del ratón mueve la pala horizontalmente
-function mouseMoveHandler(e) {
-    var relativeX = e.clientX - canvas.offsetLeft;
+// Función que dependiendo del moviento del ratón mueve la pala horizontalmente
+function controladorRaton(raton) {
+    var relativeX = raton.clientX - canvas.offsetLeft;
     if(relativeX > 0 && relativeX < canvas.width) {
-        paddleX = relativeX - paddleWidth/2;
+        posicionPalaX = relativeX - anchoPala/2;
     }
 }
 
 // Función que comprueba si se está pulsando las teclas izquierda (37) y derecha (39)
-function keyDownHandler(e) {
-    if(e.keyCode == 39) {
-        rightPressed = true;
+function pulsarTecla(tecla) {
+    if(tecla.keyCode == 39) {
+        pulsarDerecha = true;
     }
-    else if(e.keyCode == 37) {
-        leftPressed = true;
+    else if(tecla.keyCode == 37) {
+        pulsarIzquierda = true;
     }
 }
+
 // Función que comprueba si se ha dejado de pulsar las teclas izquierda (37) y derecha (39)
-function keyUpHandler(e) {
-    if(e.keyCode == 39) {
-        rightPressed = false;
+function dejarPulsarTecla(tecla) {
+    if(tecla.keyCode == 39) {
+        pulsarDerecha = false;
     }
-    else if(e.keyCode == 37) {
-        leftPressed = false;
+    else if(tecla.keyCode == 37) {
+        pulsarIzquierda = false;
     }
 }
 
 // Función que se encarga de la detección de colisiones entre la bola y ladrillos
-// Importante el uso de status para llevar los ladrillos colisionados
-function collisionDetection() {
-    for(c=0; c<brickColumnCount; c++) {
-        for(r=0; r<brickRowCount; r++) {
+// Importante el uso de golpeado para llevar los ladrillos colisionados
+function deteccionColisiones() {
+    for(c=0; c<columnasLadrillo; c++) {
+        for(r=0; r<filasLadrillo; r++) {
             var b = ladrillos[c][r];
-            if(b.status == 1) {
-                if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+            if(b.golpeado == 1) {
+                if(x > b.x && x < b.x+alturaLadrillo && y > b.y && y < b.y+anchoLadrillo) {
                     dy = -dy;
-                    b.status = 0;
-                    score++;
+                    b.golpeado = 0;
+                    puntos++;
                     // El caso en el que derribes todos los ladrillos
-                    if(score == brickRowCount*brickColumnCount) {
+                    if(puntos == filasLadrillo*columnasLadrillo) {
                         alert("Muy bien");
                         document.location.reload();
                     }
@@ -96,21 +97,21 @@ function collisionDetection() {
 }
 
 // Funcion que dibuja el marcador de puntuación
-function drawScore() {
+function dibujarPuntos() {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#ffffff";
-    ctx.fillText("Puntos: "+score, 8, 20);
+    ctx.fillText("Puntos: "+puntos, 8, 20);
 }
 
 // Función que dibuja el marcador de vidas retantes
-function drawLives() {
+function dibujarVidas() {
     ctx.font = "16px Arial";
     ctx.fillStyle = "#ffffff";
-    ctx.fillText("Lives: "+lives, canvas.width-65, 20);
+    ctx.fillText("Vidas: "+vidas, canvas.width-65, 20);
 }
 
 // Esta funcion dibuja la bola
-function drawBall() {
+function dibujarBola() {
     ctx.beginPath();
     ctx.arc(x, y, radioBola, 0, Math.PI*2);
     ctx.fillStyle = "#ffffff";
@@ -119,26 +120,26 @@ function drawBall() {
 }
 
 // Esta función dibuja la pala que controla el usuario
-function drawPaddle() {
+function dibujarPala() {
     ctx.beginPath();
-    ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+    ctx.rect(posicionPalaX, canvas.height-alturaPala, anchoPala, alturaPala);
     ctx.fillStyle = "#ffffff";
     ctx.fill();
     ctx.closePath();
 }
 
 // Esta función dibuja los ladrillos que el usuario golpeará con la bola
-// Se agrega el status para verificar si ya han sido colisionados los ladrillos
-function drawBricks() {
-    for(c=0; c<brickColumnCount; c++) {
-        for(r=0; r<brickRowCount; r++) {
-            if(ladrillos[c][r].status == 1) {
-                var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
-                var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+// Se agrega el golpeado para verificar si ya han sido colisionados los ladrillos
+function dibujarLadrillos() {
+    for(c=0; c<columnasLadrillo; c++) {
+        for(r=0; r<filasLadrillo; r++) {
+            if(ladrillos[c][r].golpeado == 1) {
+                var brickX = (c*(alturaLadrillo+espaciadoEntreLadrillos))+margenIzquierdoLadrillos;
+                var brickY = (r*(anchoLadrillo+espaciadoEntreLadrillos))+margenSuperiorLadrillos;
                 ladrillos[c][r].x = brickX;
                 ladrillos[c][r].y = brickY;
                 ctx.beginPath();
-                ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                ctx.rect(brickX, brickY, alturaLadrillo, anchoLadrillo);
                 ctx.fillStyle = "#ffffff";
                 ctx.fill();
                 ctx.closePath();
@@ -150,21 +151,21 @@ function drawBricks() {
 
 
 // Esta funcion se encarga de lo siguiente 
-function draw() {
+function tablero() {
     // que la bola no deje un rastro (una linea) a su paso con clearRect()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // crea los ladrillos definidos anteriormente
-    drawBricks();
+    dibujarLadrillos();
     // crea la bola definida anteriormente
-    drawBall();
+    dibujarBola();
     // crea la pala definida anteriormente
-    drawPaddle();
+    dibujarPala();
     // crear el marcador de puntos
-    drawScore();
+    dibujarPuntos();
     // crear el marcador de vidas
-    drawLives();
+    dibujarVidas();
     // Necesario para que detecte las colisiones con los ladrillos
-    collisionDetection();
+    deteccionColisiones();
 
 
     // Con este if se corrige que la bola no desaparezca por la derecha e izquierda
@@ -181,13 +182,13 @@ function draw() {
     // Este es el caso en el que la bola llege a la parte inferior donde está la pala
     else if(y + dy > canvas.height-radioBola) {
         // Si golpea la pala, rebota
-        if(x > paddleX && x < paddleX + paddleWidth) {
+        if(x > posicionPalaX && x < posicionPalaX + anchoPala) {
             dy = -dy;
         }
-        // En caso contrario finaliza el juego, muestra un mensaje y reinicia el juego
+        // En caso contrario resta vidas hasta finalizar el juego, muestra un mensaje y reinicia el juego
         else {
-            lives--;
-            if(!lives) {
+            vidas--;
+            if(!vidas) {
                 alert("Fin, te has quedado sin vidas");
                 document.location.reload();
             }
@@ -196,7 +197,7 @@ function draw() {
                 y = canvas.height-30;
                 dx = 2;
                 dy = -2;
-                paddleX = (canvas.width-paddleWidth)/2;
+                posicionPalaX = (canvas.width-anchoPala)/2;
             }
         }
     }
@@ -205,11 +206,11 @@ function draw() {
     // pulsada se mueva horizontalmente por la pantalla
     // También se verifica el valor de paddleX para que no se salga de la pantalla (del canvas)
     // Modificando aquí el valor de paddleX cambiará la velocidad de desplazamiento de la pala
-    if(rightPressed && paddleX < canvas.width-paddleWidth) {
-        paddleX += 15;
+    if(pulsarDerecha && posicionPalaX < canvas.width-anchoPala) {
+        posicionPalaX += 15;
     }
-    else if(leftPressed && paddleX > 0) {
-        paddleX -= 15;
+    else if(pulsarIzquierda && posicionPalaX > 0) {
+        posicionPalaX -= 15;
     }
 
     //se modifican los valores de x e y para
@@ -217,12 +218,9 @@ function draw() {
     x += dx;
     y += dy;
 
-    requestAnimationFrame(draw);
+    // Nuevo modelo que sustituye al metodo setInterval() para hacer el efecto de animación
+    requestAnimationFrame(tablero);
 }
 
-//con setInterval se dice cada cuanto tiempo
-//se ejecuta la funcion draw()s en milisegundos ( 1 segundo = 1000 )
-//Se puede decir que define la velocidad del juego
-//setInterval(draw, 25);
-
-draw();
+// Se llama recursivo a la funcion para seguir ejecutando el juego
+tablero();
