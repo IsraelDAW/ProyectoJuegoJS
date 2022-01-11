@@ -25,6 +25,8 @@ var brickHeight = 20;
 var brickPadding = 10;
 var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
+// Variable que cuenta tu puntuación
+var score = 0;
 // Se declara un array que será bidimensional que contendrá el numero de ladrillos según el numero de filas y columnas
 // Al ladrillo como objeto se le añade un status para ver si han sido colisionados
 var ladrillos = [];
@@ -69,10 +71,23 @@ function collisionDetection() {
                 if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
                     dy = -dy;
                     b.status = 0;
+                    score++;
+                    // El caso en el que derribes todos los ladrillos
+                    if(score == brickRowCount*brickColumnCount) {
+                        alert("Muy bien");
+                        document.location.reload();
+                    }
                 }
             }
         }
     }
+}
+
+// Funcion que dibuja el marcador de puntuación
+function drawScore() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#ff0000";
+    ctx.fillText("Puntos: "+score, 8, 20);
 }
 
 // Esta funcion dibuja la bola
@@ -125,6 +140,8 @@ function draw() {
     drawBall();
     // crea la pala definida anteriormente
     drawPaddle();
+    // crear el marcador de puntos
+    drawScore();
     // Necesario para que detecte las colisiones con los ladrillos
     collisionDetection();
 
@@ -172,4 +189,5 @@ function draw() {
 
 //con setInterval se dice cada cuanto tiempo
 //se ejecuta la funcion draw()s en milisegundos ( 1 segundo = 1000 )
-setInterval(draw, 100);
+//Se puede decir que define la velocidad del juego
+setInterval(draw, 25);
