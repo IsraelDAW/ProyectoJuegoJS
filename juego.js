@@ -41,6 +41,16 @@ for(c=0; c<brickColumnCount; c++) {
 // Estos llaman a las funciones keyDownHandler() y keyUpHandler() 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
+// Similar a lo anterior pero con el ratón
+document.addEventListener("mousemove", mouseMoveHandler, false);
+
+// Funcion que en función del moviento del ratón mueve la pala horizontalmente
+function mouseMoveHandler(e) {
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if(relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
+    }
+}
 
 // Función que comprueba si se está pulsando las teclas izquierda (37) y derecha (39)
 function keyDownHandler(e) {
@@ -86,7 +96,7 @@ function collisionDetection() {
 // Funcion que dibuja el marcador de puntuación
 function drawScore() {
     ctx.font = "16px Arial";
-    ctx.fillStyle = "#ff0000";
+    ctx.fillStyle = "#ffffff";
     ctx.fillText("Puntos: "+score, 8, 20);
 }
 
@@ -94,7 +104,7 @@ function drawScore() {
 function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, radioBola, 0, Math.PI*2);
-    ctx.fillStyle = "#ff0000";
+    ctx.fillStyle = "#ffffff";
     ctx.fill();
     ctx.closePath();
 }
@@ -103,7 +113,7 @@ function drawBall() {
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-    ctx.fillStyle = "#ff0000";
+    ctx.fillStyle = "#ffffff";
     ctx.fill();
     ctx.closePath();
 }
@@ -120,7 +130,7 @@ function drawBricks() {
                 ladrillos[c][r].y = brickY;
                 ctx.beginPath();
                 ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                ctx.fillStyle = "#ff0000";
+                ctx.fillStyle = "#ffffff";
                 ctx.fill();
                 ctx.closePath();
             }
