@@ -27,6 +27,8 @@ var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
 // Variable que cuenta tu puntuación
 var score = 0;
+// Variable que contiene las vidas restantes del jugador
+var lives = 3;
 // Se declara un array que será bidimensional que contendrá el numero de ladrillos según el numero de filas y columnas
 // Al ladrillo como objeto se le añade un status para ver si han sido colisionados
 var ladrillos = [];
@@ -100,6 +102,13 @@ function drawScore() {
     ctx.fillText("Puntos: "+score, 8, 20);
 }
 
+// Función que dibuja el marcador de vidas retantes
+function drawLives() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("Lives: "+lives, canvas.width-65, 20);
+}
+
 // Esta funcion dibuja la bola
 function drawBall() {
     ctx.beginPath();
@@ -152,6 +161,8 @@ function draw() {
     drawPaddle();
     // crear el marcador de puntos
     drawScore();
+    // crear el marcador de vidas
+    drawLives();
     // Necesario para que detecte las colisiones con los ladrillos
     collisionDetection();
 
@@ -175,8 +186,18 @@ function draw() {
         }
         // En caso contrario finaliza el juego, muestra un mensaje y reinicia el juego
         else {
-            alert("Fin del juego");
-            document.location.reload();
+            lives--;
+            if(!lives) {
+                alert("Fin, te has quedado sin vidas");
+                document.location.reload();
+            }
+            else {
+                x = canvas.width/2;
+                y = canvas.height-30;
+                dx = 2;
+                dy = -2;
+                paddleX = (canvas.width-paddleWidth)/2;
+            }
         }
     }
 
@@ -195,9 +216,13 @@ function draw() {
     // hacer ese efecto de movimiento de la bola
     x += dx;
     y += dy;
+
+    requestAnimationFrame(draw);
 }
 
 //con setInterval se dice cada cuanto tiempo
 //se ejecuta la funcion draw()s en milisegundos ( 1 segundo = 1000 )
 //Se puede decir que define la velocidad del juego
-setInterval(draw, 25);
+//setInterval(draw, 25);
+
+draw();
