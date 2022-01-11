@@ -26,11 +26,12 @@ var brickPadding = 10;
 var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
 // Se declara un array que será bidimensional que contendrá el numero de ladrillos según el numero de filas y columnas
+// Al ladrillo como objeto se le añade un status para ver si han sido colisionados
 var ladrillos = [];
 for(c=0; c<brickColumnCount; c++) {
     ladrillos[c] = [];
     for(r=0; r<brickRowCount; r++) {
-        ladrillos[c][r] = { x: 0, y: 0 };
+        ladrillos[c][r] = { x: 0, y: 0, status: 1 };
     }
 }
 
@@ -58,6 +59,22 @@ function keyUpHandler(e) {
     }
 }
 
+// Función que se encarga de la detección de colisiones entre la bola y ladrillos
+// Importante el uso de status para llevar los ladrillos colisionados
+function collisionDetection() {
+    for(c=0; c<brickColumnCount; c++) {
+        for(r=0; r<brickRowCount; r++) {
+            var b = ladrillos[c][r];
+            if(b.status == 1) {
+                if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+                    dy = -dy;
+                    b.status = 0;
+                }
+            }
+        }
+    }
+}
+
 // Esta funcion dibuja la bola
 function drawBall() {
     ctx.beginPath();
@@ -77,21 +94,25 @@ function drawPaddle() {
 }
 
 // Esta función dibuja los ladrillos que el usuario golpeará con la bola
+// Se agrega el status para verificar si ya han sido colisionados los ladrillos
 function drawBricks() {
     for(c=0; c<brickColumnCount; c++) {
         for(r=0; r<brickRowCount; r++) {
-            var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
-            var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
-            ladrillos[c][r].x = brickX;
-            ladrillos[c][r].y = brickY;
-            ctx.beginPath();
-            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = "#ff0000";
-            ctx.fill();
-            ctx.closePath();
+            if(ladrillos[c][r].status == 1) {
+                var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+                var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+                ladrillos[c][r].x = brickX;
+                ladrillos[c][r].y = brickY;
+                ctx.beginPath();
+                ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                ctx.fillStyle = "#ff0000";
+                ctx.fill();
+                ctx.closePath();
+            }
         }
     }
 }
+
 
 
 // Esta funcion se encarga de lo siguiente 
@@ -104,6 +125,9 @@ function draw() {
     drawBall();
     // crea la pala definida anteriormente
     drawPaddle();
+    // Necesario para que detecte las colisiones con los ladrillos
+    collisionDetection();
+
 
     // Con este if se corrige que la bola no desaparezca por la derecha e izquierda
     // Hace falta usar la variable radioBola porque sino la bola no chocaria,
@@ -148,4 +172,4 @@ function draw() {
 
 //con setInterval se dice cada cuanto tiempo
 //se ejecuta la funcion draw()s en milisegundos ( 1 segundo = 1000 )
-setInterval(draw, 10);
+setInterval(draw, 100);
